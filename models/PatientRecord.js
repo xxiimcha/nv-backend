@@ -16,7 +16,7 @@ const patientRecordSchema = new mongoose.Schema({
   weightForHeight: String,
   nutritionStatus: String,
   goalWeight: String,
-  foodAllergies: String, // <-- Added field for food allergies
+  foodAllergy: String,
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true }
 });
 
