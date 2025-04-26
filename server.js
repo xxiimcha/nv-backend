@@ -2,13 +2,13 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const fs = require('fs');
+require('dotenv').config(); // Load environment variables from .env
 
 const app = express();
 
-const fs = require('fs');
+// Create uploads directory if not exists
 const uploadDir = './uploads';
-
-// Check if the 'uploads' directory exists, if not, create it
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
@@ -17,34 +17,42 @@ if (!fs.existsSync(uploadDir)) {
 app.use(bodyParser.json());
 app.use(cors());
 
-// MongoDB connection
-mongoose.connect('mongodb+srv://nutrivision:nutrivision123@nutrivision.04lzv.mongodb.net/nutrivision?retryWrites=true&w=majority&appName=nutrivision', {
+// MongoDB connection using environment variable
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-});
+})
+.then(() => console.log('MongoDB connected'))
+.catch((err) => console.error('MongoDB connection error:', err));
 
 // Routes
-const authRoutes = require('./routes/auth'); // Import the auth routes
-const eventRoutes = require('./routes/events'); // Import the event routes
-const patientRoutes = require('./routes/patients'); // Import the patient routes
-const userRoutes = require('./routes/users'); // Import the patient routes
-const notifRoutes = require('./routes/notifications'); // Import the patient routes
-const mealPlanRoutes = require('./routes/mealplans'); // Import the patient routes
-const messagesRouter = require('./routes/messages'); // Correct path to your messages route file
-app.use('/api/messages', messagesRouter); // Use '/api/messages' as the base path for message routes
-const callsRouter = require('./routes/calls'); // Correct path to your messages route file
-app.use('/api/calls', callsRouter); // Use '/api/messages' as the base path for message routes
+const authRoutes = require('./routes/auth');
+const eventRoutes = require('./routes/events');
+const patientRoutes = require('./routes/patients');
+const userRoutes = require('./routes/users');
+const notifRoutes = require('./routes/notifications');
+const mealPlanRoutes = require('./routes/mealplans');
+const messagesRouter = require('./routes/messages');
+const callsRouter = require('./routes/calls');
 
-app.use('/api/auth', authRoutes); // Use the auth routes
-app.use('/api/events', eventRoutes); // Use the event routes
-app.use('/api/patients', patientRoutes); // Use the patient routes
-app.use('/api/users', userRoutes); // Use the patient routes
-app.use('/api/notifications', notifRoutes); // Use the patient routes
-app.use('/api/mealplans', mealPlanRoutes); // Use the patient routes
+// Apply routes
+app.use('/api/auth', authRoutes);
+app.use('/api/events', eventRoutes);
+app.use('/api/patients', patientRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/notifications', notifRoutes);
+app.use('/api/mealplans', mealPlanRoutes);
+app.use('/api/messages', messagesRouter);
+app.use('/api/calls', callsRouter);
 
-// Set the port to 5000
-const PORT = 5000;
+// Basic healthcheck route (optional but recommended)
+app.get('/', (req, res) => {
+  res.send('Backend server is running!');
+});
+
+// Use dynamic port for Render
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
