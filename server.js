@@ -22,8 +22,8 @@ mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('MongoDB connected'))
-.catch((err) => console.error('MongoDB connection error:', err));
+.then(() => console.log('✅ MongoDB connected'))
+.catch((err) => console.error('❌ MongoDB connection error:', err));
 
 // Routes
 const authRoutes = require('./routes/auth');
@@ -34,6 +34,7 @@ const notifRoutes = require('./routes/notifications');
 const mealPlanRoutes = require('./routes/mealplans');
 const messagesRouter = require('./routes/messages');
 const callsRouter = require('./routes/calls');
+const tokenRoutes = require('./routes/tokens'); // ✅ Add this for FCM token saving
 
 // Apply routes
 app.use('/api/auth', authRoutes);
@@ -44,15 +45,15 @@ app.use('/api/notifications', notifRoutes);
 app.use('/api/mealplans', mealPlanRoutes);
 app.use('/api/messages', messagesRouter);
 app.use('/api/calls', callsRouter);
+app.use('/api/tokens', tokenRoutes); // ✅ New route for save-token and send-push
 
-// Basic healthcheck route (optional but recommended)
+// Basic healthcheck route
 app.get('/', (req, res) => {
   res.send('Backend server is running!');
 });
 
-// Use dynamic port for Render
+// Use dynamic port (for Render or localhost)
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`🚀 Server is running on port ${PORT}`);
 });
