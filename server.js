@@ -45,7 +45,7 @@ app.use('/api/notifications', notifRoutes);
 app.use('/api/mealplans', mealPlanRoutes);
 app.use('/api/messages', messagesRouter);
 app.use('/api/calls', callsRouter);
-app.use('/api/tokens', tokenRoutes); // ✅ New route for save-token and send-push
+app.use('/api/tokens', tokenRoutes);
 
 // Basic healthcheck route
 app.get('/', (req, res) => {

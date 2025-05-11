@@ -4,8 +4,6 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto'); // For generating random reset tokens
 
 const router = express.Router();
-
-// Signup route
 router.post('/signup', async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -17,31 +15,35 @@ router.post('/signup', async (req, res) => {
       return res.status(400).json({ msg: 'User already exists' });
     }
 
-    // Generate a 4-digit OTP
     const otp = Math.floor(1000 + Math.random() * 9000).toString();
-    const otpExpires = Date.now() + 10 * 60 * 1000; // OTP expires in 10 minutes
+    const otpExpires = Date.now() + 10 * 60 * 1000;
 
-    // Create a new user with the plain text password and OTP
     user = new User({
       username,
       email,
-      password, // Store password as plain text (not recommended for production)
+      password, // Warning: use bcrypt in production
       otp,
       otpExpires,
     });
 
     await user.save();
+    console.log(`User registered: ${username}, email: ${email}, OTP: ${otp}`);
 
-    console.log(`User registered successfully: ${username} - ${email}`);
-    console.log(`OTP generated for ${email}: ${otp}`);
-
-    // Send OTP to the user's email
     const transporter = nodemailer.createTransport({
-      service: 'Gmail', // Replace with your email service
+      service: 'Gmail',
       auth: {
-        user: 'charmaine.l.d.cator@gmail.com', // Replace with your email
-        pass: 'uupdlgytovgrljdn', // Replace with your email password
+        user: 'charmaine.l.d.cator@gmail.com',
+        pass: 'uupdlgytovgrljdn', // REPLACE with updated App Password
       },
+    });
+
+    // Debug transporter config
+    transporter.verify(function (error, success) {
+      if (error) {
+        console.error("Email config error:", error);
+      } else {
+        console.log("Server is ready to send messages.");
+      }
     });
 
     const mailOptions = {
@@ -53,18 +55,21 @@ router.post('/signup', async (req, res) => {
 
     try {
       await transporter.sendMail(mailOptions);
-      console.log(`OTP email sent successfully to ${email}.`);
+      console.log(`OTP email sent successfully to ${email}`);
       res.status(201).json({ msg: 'User registered successfully. OTP sent to your email.' });
     } catch (emailError) {
-      console.error(`Error sending OTP to ${email}:`, emailError);
-      res.status(500).json({ msg: 'User registered, but failed to send OTP. Please try again.' });
+      console.error(`Failed to send OTP email:`, emailError);
+      res.status(500).json({
+        msg: 'User registered, but failed to send OTP. Please try again.',
+        debug: emailError.message,
+      });
     }
-
   } catch (err) {
-    console.error('Error during signup:', err.message);
-    res.status(500).send('Server error');
+    console.error('Signup error:', err.message);
+    res.status(500).json({ msg: 'Server error' });
   }
 });
+
 
 // Forgot Password route - Send OTP to reset password
 router.post('/forgot-password', async (req, res) => {
@@ -91,7 +96,7 @@ router.post('/forgot-password', async (req, res) => {
       service: 'Gmail',
       auth: {
         user: 'charmaine.l.d.cator@gmail.com', // Replace with your email
-        pass: 'uupdlgytovgrljdn', // Replace with your email password
+        pass: 'lkdbhxvqozvmpfby', // Replace with your email password
       },
     });
 

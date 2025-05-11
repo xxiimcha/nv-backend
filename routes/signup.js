@@ -34,7 +34,7 @@ router.post('/signup', async (req, res) => {
       service: 'Gmail', // Replace with your email service
       auth: {
         user: 'charmaine.l.d.cator@gmail.com', // Replace with your email
-        pass: 'uupdlgytovgrljdn', // Replace with your email password
+        pass: 'lkdbhxvqozvmpfby', // Replace with your email password
       },
     });
 
