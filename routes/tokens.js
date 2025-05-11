@@ -13,7 +13,7 @@ router.post('/save-token', async (req, res) => {
 
   try {
     await UserToken.findOneAndUpdate(
-      { userId },
+      { userId: new mongoose.Types.ObjectId(userId) }, // Cast here
       { token },
       { upsert: true, new: true }
     );
