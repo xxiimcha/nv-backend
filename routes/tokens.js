@@ -13,7 +13,7 @@ router.post('/save-token', async (req, res) => {
 
   try {
     await UserToken.findOneAndUpdate(
-      { userId: new mongoose.Types.ObjectId(userId) }, // Cast here
+      { userId }, // userId as string
       { token },
       { upsert: true, new: true }
     );
@@ -23,6 +23,7 @@ router.post('/save-token', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 // Send a push notification manually (for testing)
 router.post('/send-push', async (req, res) => {
