@@ -1,7 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User'); // Assuming you have a User model
+const Admin = require('../models/Admin'); // NEW: Import Admin model
+
 const { upload, firebaseUploadMiddleware } = require('../middleware/firebaseUpload');
+
+// Get admin details by ID
+router.get('/admin/:id', async (req, res) => {
+  try {
+    const admin = await Admin.findById(req.params.id).select('firstName lastName role');
+    if (!admin) {
+      return res.status(404).json({ message: 'Admin not found' });
+    }
+    res.status(200).json(admin);
+  } catch (error) {
+    console.error(`Error fetching admin with ID ${req.params.id}:`, error);
+    res.status(500).json({ message: 'Error fetching admin', error });
+  }
+});
+
 
 // Get all users
 router.get('/', async (req, res) => {
