@@ -51,4 +51,24 @@ router.post('/:callId/status', async (req, res) => {
   }
 });
 
+// GET /api/calls/pending?receiverId=<id>
+router.get('/pending', async (req, res) => {
+  try {
+    const { receiverId } = req.query;
+    const signal = await CallSignal.findOne({
+      receiverId,
+      status: 'calling'
+    }).sort({ createdAt: -1 });
+
+    if (signal) {
+      return res.json(signal);
+    } else {
+      return res.status(204).send(); // No Content
+    }
+  } catch (error) {
+    console.error('Polling error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 module.exports = router;
